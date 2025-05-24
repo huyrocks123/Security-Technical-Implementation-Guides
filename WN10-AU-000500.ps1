@@ -20,23 +20,23 @@
     PowerShell Ver. : 
 
 .USAGE
-    Put any usage instructions here.
-    Example syntax:
-    PS C:\> .\__remediation_template(STIG-ID-WN10-AU-000500).ps1 
+    Run as Administrator
+    PS C:\> .\WN10-AU-000500.ps1
 #>
 
-# Define the registry path and value
-$RegistryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application"
-$ValueName = "MaxSize"
-$ValueData = 0x8000  # 0x8000 is equivalent to dword:00008000
+# Define the registry path
+$registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application"
+$name = "MaxSize"
+$value = 0x8000
 
-# Check if the registry path exists, if not, create it
-if (-not (Test-Path $RegistryPath)) {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog" -Name "Application" -Force
+# Check if the registry path exists, and create it if it doesn't
+if (-not (Test-Path $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+    Write-Output "Created registry path: $registryPath"
 }
 
-# Set the registry value
-New-ItemProperty -Path $RegistryPath -Name $ValueName -Value $ValueData -PropertyType DWord -Force
+# Set the registry value (DWORD); use -Force to overwrite if it already exists
+New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType DWord -Force | Out-Null
 
-# Confirm the change
-Write-Host "Registry key for MaxSize has been set to $ValueData"
+# Output success message
+Write-Output "Successfully set '$name' to $value (0x8000) under $registryPath"
